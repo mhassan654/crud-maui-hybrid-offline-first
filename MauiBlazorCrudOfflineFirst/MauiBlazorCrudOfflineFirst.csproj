@@ -70,4 +70,8 @@
         <ProjectReference Include="..\MauiBlazorCrudOfflineFirst.Shared\MauiBlazorCrudOfflineFirst.Shared.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Models\" />
+    </ItemGroup>
+
 </Project>

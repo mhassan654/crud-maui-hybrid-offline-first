@@ -1,6 +1,57 @@
 @page "/Products"
+@using MauiBlazorCrudOfflineFirst.Shared.Core.Models
+@using MauiBlazorCrudOfflineFirst.Shared.Core.Services
+
+@inject SyncService SyncService
+@inject ProductService ProductService
+
+
 <h3>Products</h3>
+<button class="btn btn-primary" @onclick="SyncData">Sync</button>
+
+<input @bind="_newProduct.Name" placeholder="Name"/>
+<input @bind="_newProduct.Price" placeholder="price"/>
+<button @onclick="AddProduct">Add</button>
+
+<ul>
+    @foreach (var product in _products)
+    {
+        <li>
+            @product.Name - @product.Price
+            <button @onclick="()=>DeleteProduct(product.Id)">Delete</button>
+        </li>
+    }
+</ul>
 
 @code {
+    List<Product> _products = [];
+    Product _newProduct = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _products = await ProductService.GetProductsAsync();
+    }
+
+    async Task AddProduct()
+    {
+        _newProduct.IsSynced = false;
+        _newProduct.IsDeleted = false;
+        _newProduct.LastModified = DateTime.UtcNow;
+        await ProductService.AddOrUpdateAsync(_newProduct);
+        _newProduct = new();
+        _products = await ProductService.GetProductsAsync();
+    }
+
+    async Task DeleteProduct(int id)
+    {
+        await ProductService.DeleteAsync(id);
+        _products = await ProductService.GetProductsAsync();
+    }
+
+    async Task SyncData()
+    {
+        await SyncService.SyncAsync();
+        _products = await ProductService.GetProductsAsync();
+    }
     
 }

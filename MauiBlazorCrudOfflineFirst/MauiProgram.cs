@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MauiBlazorCrudOfflineFirst.Shared.Services;
 using MauiBlazorCrudOfflineFirst.Services;
+using MauiBlazorCrudOfflineFirst.Shared.Core.Services;
 
 namespace MauiBlazorCrudOfflineFirst;
 
@@ -20,6 +21,15 @@ public static class MauiProgram
         builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
         builder.Services.AddMauiBlazorWebView();
+        
+        // Path to SQLite database
+        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "LocalDatabase.db");
+        
+        // Change this:
+builder.Services.AddSingleton(new ProductService(dbPath));
+
+        builder.Services.AddScoped<SyncService>();
+        builder.Services.AddScoped(sp => new HttpClient());
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
